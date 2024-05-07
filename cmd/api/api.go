@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/edupsousa/concursos-api/services/concursos"
 	"github.com/edupsousa/concursos-api/services/user"
 	"github.com/gorilla/mux"
 )
@@ -28,6 +29,10 @@ func (s *APIServer) Run() error {
 	userStore := user.NewStore(s.db)
 	userHandler := user.NewHandler(userStore)
 	userHandler.RegisterRoutes(subrouter)
+
+	concursosStore := concursos.NewStore(s.db)
+	concursosHandler := concursos.NewHandler(concursosStore)
+	concursosHandler.RegisterRoutes(subrouter)
 
 	log.Println("Listening on", s.addr)
 
