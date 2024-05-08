@@ -30,7 +30,16 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 func (h *Handler) handleGetConcursos(w http.ResponseWriter, r *http.Request) {
 	concursos := h.store.GetConcursos()
 
-	utils.WriteJSON(w, http.StatusOK, concursos)
+	var response []concursos_model.GetConcursosResponseItem
+	for _, concurso := range concursos {
+		response = append(response, concursos_model.GetConcursosResponseItem{
+			ID:        concurso.ID,
+			Titulo:    concurso.Titulo,
+			Publicado: concurso.Publicado,
+		})
+	}
+
+	utils.WriteJSON(w, http.StatusOK, response)
 }
 
 func (h *Handler) handleGetConcurso(w http.ResponseWriter, r *http.Request) {
@@ -52,7 +61,15 @@ func (h *Handler) handleGetConcurso(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusOK, concurso)
+	response := concursos_model.GetConcursoResponse{
+		ID:        concurso.ID,
+		Titulo:    concurso.Titulo,
+		Publicado: concurso.Publicado,
+		CreatedAt: concurso.CreatedAt,
+		UpdatedAt: concurso.UpdatedAt,
+	}
+
+	utils.WriteJSON(w, http.StatusOK, response)
 }
 
 func (h *Handler) handleCreateConcurso(w http.ResponseWriter, r *http.Request) {

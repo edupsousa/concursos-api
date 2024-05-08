@@ -25,3 +25,17 @@ type ConcursosStore interface {
 type CreateConcursoPayload struct {
 	Titulo string `validate:"required"`
 }
+
+type GetConcursoResponse struct {
+	ID        uint      `json:"id"`
+	Titulo    string    `json:"titulo"`
+	Publicado bool      `json:"publicado"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type GetConcursosResponseItem struct {
+	ID        uint   `json:"id"`
+	Titulo    string `json:"titulo"`
+	Publicado bool   `json:"publicado"`
+}
