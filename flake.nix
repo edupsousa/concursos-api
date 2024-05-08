@@ -24,9 +24,6 @@
 
             # https://github.com/golangci/golangci-lint
             golangci-lint
-
-            # https://github.com/golang-migrate/migrate/tree/master/cmd/migrate
-            go-migrate
           ];
         };
       });
