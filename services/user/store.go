@@ -1,91 +1,41 @@
 package user
 
 import (
-	"database/sql"
-	"fmt"
+	"log"
 
-	"github.com/edupsousa/concursos-api/types"
+	user_model "github.com/edupsousa/concursos-api/services/user/model"
+	"gorm.io/gorm"
 )
 
 type Store struct {
-	db *sql.DB
+	db *gorm.DB
 }
 
-func NewStore(db *sql.DB) *Store {
+func NewStore(db *gorm.DB) *Store {
+	db.AutoMigrate(&user_model.User{})
 	return &Store{db: db}
 }
 
-func (s *Store) GetUserByEmail(email string) (*types.User, error) {
-	rows, err := s.db.Query("SELECT * FROM users WHERE email = ?", email)
+func (s *Store) GetUserByEmail(email string) *user_model.User {
+	var user user_model.User
+	err := s.db.Where("email = ?", email).First(&user).Error
 	if err != nil {
-		return nil, err
+		log.Printf("error getting user by email: %v", err)
+		return nil
 	}
-
-	u := new(types.User)
-	for rows.Next() {
-		u, err = scanRowIntoUser(rows)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if u.ID == 0 {
-		return nil, fmt.Errorf("user not found")
-	}
-
-	return u, nil
+	return &user
 }
 
-func (s *Store) GetUserByID(id int) (*types.User, error) {
-	rows, err := s.db.Query("SELECT * FROM users WHERE id = ?", id)
+func (s *Store) GetUserByID(id int) *user_model.User {
+	var user user_model.User
+	err := s.db.First(&user, id).Error
 	if err != nil {
-		return nil, err
+		log.Printf("error getting user by id: %v", err)
+		return nil
 	}
-
-	u := new(types.User)
-	for rows.Next() {
-		u, err = scanRowIntoUser(rows)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if u.ID == 0 {
-		return nil, fmt.Errorf("user not found")
-	}
-
-	return u, nil
+	return &user
 }
 
-func (s *Store) CreateUser(user types.User) error {
-	_, err := s.db.Exec("INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?);",
-		user.FirstName,
-		user.LastName,
-		user.Email,
-		user.Password,
-	)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func scanRowIntoUser(rows *sql.Rows) (*types.User, error) {
-	user := new(types.User)
-
-	err := rows.Scan(
-		&user.ID,
-		&user.FirstName,
-		&user.LastName,
-		&user.Email,
-		&user.EmailVerified,
-		&user.Password,
-		&user.CreatedAt,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
+func (s *Store) CreateUser(user *user_model.User) error {
+	return s.db.Create(user).Error
 }

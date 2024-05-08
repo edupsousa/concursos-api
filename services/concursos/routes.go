@@ -6,17 +6,18 @@ import (
 	"strconv"
 
 	"github.com/edupsousa/concursos-api/services/auth"
-	"github.com/edupsousa/concursos-api/types"
+	concursos_model "github.com/edupsousa/concursos-api/services/concursos/model"
+	user_model "github.com/edupsousa/concursos-api/services/user/model"
 	"github.com/edupsousa/concursos-api/utils"
 	"github.com/gorilla/mux"
 )
 
 type Handler struct {
-	store     ConcursosStore
-	userStore types.UserStore
+	store     concursos_model.ConcursosStore
+	userStore user_model.UserStore
 }
 
-func NewHandler(store ConcursosStore, userStore types.UserStore) *Handler {
+func NewHandler(store concursos_model.ConcursosStore, userStore user_model.UserStore) *Handler {
 	return &Handler{store: store, userStore: userStore}
 }
 
@@ -55,7 +56,7 @@ func (h *Handler) handleGetConcurso(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) handleCreateConcurso(w http.ResponseWriter, r *http.Request) {
-	var payload CreateConcursoPayload
+	var payload concursos_model.CreateConcursoPayload
 	if err := utils.ParseJSON(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
@@ -66,7 +67,7 @@ func (h *Handler) handleCreateConcurso(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	concurso := Concurso{Titulo: payload.Titulo}
+	concurso := concursos_model.Concurso{Titulo: payload.Titulo}
 	if err := h.store.CreateConcurso(&concurso); err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return

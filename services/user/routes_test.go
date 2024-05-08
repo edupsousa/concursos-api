@@ -3,12 +3,11 @@ package user
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/edupsousa/concursos-api/types"
+	user_model "github.com/edupsousa/concursos-api/services/user/model"
 	"github.com/gorilla/mux"
 )
 
@@ -17,7 +16,7 @@ func TestUserServiceHandlers(t *testing.T) {
 	handler := NewHandler(userStore)
 
 	t.Run("should fail if the user payload is invalid", func(t *testing.T) {
-		payload := types.RegisterUserPayload{
+		payload := user_model.RegisterUserPayload{
 			FirstName: "John",
 			LastName:  "Doe",
 			Email:     "abc",
@@ -40,7 +39,7 @@ func TestUserServiceHandlers(t *testing.T) {
 	})
 
 	t.Run("should correctly register a new user", func(t *testing.T) {
-		payload := types.RegisterUserPayload{
+		payload := user_model.RegisterUserPayload{
 			FirstName: "John",
 			LastName:  "Doe",
 			Email:     "john_doe@acme.com",
@@ -65,14 +64,14 @@ func TestUserServiceHandlers(t *testing.T) {
 
 type mockUserStore struct{}
 
-func (m *mockUserStore) GetUserByEmail(email string) (*types.User, error) {
-	return nil, fmt.Errorf("user not found")
+func (m *mockUserStore) GetUserByEmail(email string) *user_model.User {
+	return nil
 }
 
-func (m *mockUserStore) GetUserByID(id int) (*types.User, error) {
-	return nil, nil
+func (m *mockUserStore) GetUserByID(id int) *user_model.User {
+	return nil
 }
 
-func (m *mockUserStore) CreateUser(user types.User) error {
+func (m *mockUserStore) CreateUser(user *user_model.User) error {
 	return nil
 }

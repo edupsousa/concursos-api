@@ -5,17 +5,17 @@ import (
 	"net/http"
 
 	"github.com/edupsousa/concursos-api/services/auth"
-	"github.com/edupsousa/concursos-api/types"
+	user_model "github.com/edupsousa/concursos-api/services/user/model"
 	"github.com/edupsousa/concursos-api/utils"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 )
 
 type Handler struct {
-	store types.UserStore
+	store user_model.UserStore
 }
 
-func NewHandler(store types.UserStore) *Handler {
+func NewHandler(store user_model.UserStore) *Handler {
 	return &Handler{store: store}
 }
 
@@ -25,7 +25,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 }
 
 func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
-	var payload types.LoginUserPayload
+	var payload user_model.LoginUserPayload
 	if err := utils.ParseJSON(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 	}
@@ -36,8 +36,8 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, err := h.store.GetUserByEmail(payload.Email)
-	if err != nil {
+	u := h.store.GetUserByEmail(payload.Email)
+	if u == nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid email or password"))
 		return
 	}
@@ -57,7 +57,7 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
-	var payload types.RegisterUserPayload
+	var payload user_model.RegisterUserPayload
 	if err := utils.ParseJSON(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 	}
@@ -68,8 +68,9 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := h.store.GetUserByEmail(payload.Email)
-	if err == nil {
+	// TODO: Replace with count user by email
+	user := h.store.GetUserByEmail(payload.Email)
+	if user != nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user with email %s already exists", payload.Email))
 		return
 	}
@@ -80,7 +81,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.store.CreateUser(types.User{
+	err = h.store.CreateUser(&user_model.User{
 		FirstName:     payload.FirstName,
 		LastName:      payload.LastName,
 		Email:         payload.Email,

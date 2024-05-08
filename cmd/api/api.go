@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 
@@ -13,15 +12,13 @@ import (
 
 type APIServer struct {
 	addr string
-	db   *sql.DB
-	gdb  *gorm.DB
+	db   *gorm.DB
 }
 
-func NewAPIServer(addr string, db *sql.DB, gdb *gorm.DB) *APIServer {
+func NewAPIServer(addr string, db *gorm.DB) *APIServer {
 	return &APIServer{
 		addr: addr,
 		db:   db,
-		gdb:  gdb,
 	}
 }
 
@@ -33,7 +30,7 @@ func (s *APIServer) Run() error {
 	userHandler := user.NewHandler(userStore)
 	userHandler.RegisterRoutes(subrouter)
 
-	concursosStore := concursos.NewStore(s.gdb)
+	concursosStore := concursos.NewStore(s.db)
 	concursosHandler := concursos.NewHandler(concursosStore, userStore)
 	concursosHandler.RegisterRoutes(subrouter)
 

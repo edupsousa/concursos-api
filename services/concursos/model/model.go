@@ -1,4 +1,4 @@
-package concursos
+package concursos_model
 
 import (
 	"time"
@@ -23,5 +23,5 @@ type ConcursosStore interface {
 }
 
 type CreateConcursoPayload struct {
-	Titulo string `json:"titulo" validate:"required"`
+	Titulo string `validate:"required"`
 }

@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/edupsousa/concursos-api/config"
-	"github.com/edupsousa/concursos-api/types"
+	user_model "github.com/edupsousa/concursos-api/services/user/model"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -17,12 +17,12 @@ type contextKey string
 
 const UserKey contextKey = "userID"
 
-func CreateJWT(userID int) (string, error) {
+func CreateJWT(userID uint) (string, error) {
 	secret := config.Envs.JWTSecret
 	expiration := time.Second * time.Duration(config.Envs.JWTExpirationInSeconds)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userID":   strconv.Itoa(userID),
+		"userID":   strconv.FormatUint(uint64(userID), 10),
 		"expireAt": time.Now().Add(expiration).Unix(),
 	})
 
@@ -34,7 +34,7 @@ func CreateJWT(userID int) (string, error) {
 	return tokenString, nil
 }
 
-func WithJWTAuth(handlerFunc http.HandlerFunc, store types.UserStore) http.HandlerFunc {
+func WithJWTAuth(handlerFunc http.HandlerFunc, store user_model.UserStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tokenString := getTokenFromRequest(r)
 		token, err := validateTokenString(tokenString)
@@ -62,12 +62,15 @@ func WithJWTAuth(handlerFunc http.HandlerFunc, store types.UserStore) http.Handl
 	}
 }
 
-func getUserFromToken(token *jwt.Token, store types.UserStore) (*types.User, error) {
+func getUserFromToken(token *jwt.Token, store user_model.UserStore) (*user_model.User, error) {
 	claims := token.Claims.(jwt.MapClaims)
 	strUserID := claims["userID"].(string)
 	userID, _ := strconv.Atoi(strUserID)
-	user, err := store.GetUserByID(userID)
-	return user, err
+	user := store.GetUserByID(userID)
+	if user == nil {
+		return nil, fmt.Errorf("user not found")
+	}
+	return user, nil
 }
 
 func getTokenFromRequest(r *http.Request) string {
