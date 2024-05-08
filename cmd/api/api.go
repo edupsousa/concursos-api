@@ -31,7 +31,7 @@ func (s *APIServer) Run() error {
 	userHandler.RegisterRoutes(subrouter)
 
 	concursosStore := concursos.NewStore(s.db)
-	concursosHandler := concursos.NewHandler(concursosStore)
+	concursosHandler := concursos.NewHandler(concursosStore, userStore)
 	concursosHandler.RegisterRoutes(subrouter)
 
 	log.Println("Listening on", s.addr)

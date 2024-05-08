@@ -5,23 +5,25 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/edupsousa/concursos-api/services/auth"
 	"github.com/edupsousa/concursos-api/types"
 	"github.com/edupsousa/concursos-api/utils"
 	"github.com/gorilla/mux"
 )
 
 type Handler struct {
-	store types.ConcursosStore
+	store     types.ConcursosStore
+	userStore types.UserStore
 }
 
-func NewHandler(store types.ConcursosStore) *Handler {
-	return &Handler{store: store}
+func NewHandler(store types.ConcursosStore, userStore types.UserStore) *Handler {
+	return &Handler{store: store, userStore: userStore}
 }
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {
-	router.HandleFunc("/concursos", h.handleGetConcursos).Methods(http.MethodGet)
-	router.HandleFunc("/concursos", h.handleCreateConcurso).Methods(http.MethodPost)
-	router.HandleFunc("/concursos/{id}", h.handleGetConcurso).Methods(http.MethodGet)
+	router.HandleFunc("/concursos", auth.WithJWTAuth(h.handleGetConcursos, h.userStore)).Methods(http.MethodGet)
+	router.HandleFunc("/concursos", auth.WithJWTAuth(h.handleCreateConcurso, h.userStore)).Methods(http.MethodPost)
+	router.HandleFunc("/concursos/{id}", auth.WithJWTAuth(h.handleGetConcurso, h.userStore)).Methods(http.MethodGet)
 }
 
 func (h *Handler) handleGetConcursos(w http.ResponseWriter, r *http.Request) {

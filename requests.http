@@ -13,7 +13,7 @@ POST http://127.0.0.1:8080/api/v1/login
 Content-Type: application/json
 
 {
-  "email": "john.doe@acme.com",
+  "email": "john.doe1@acme.com",
   "password": "password"
 }
 
@@ -27,6 +27,7 @@ Content-Type: application/json
 
 ###
 GET http://127.0.0.1:8080/api/v1/concursos
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVBdCI6MTcxNTE4MDAwOCwidXNlcklEIjoiMSJ9.ir6hlV890pP7wA5IW1wP_K4-LEkSBeMlhaEH_On8WPs
 Content-Type: application/json
 
 ###
