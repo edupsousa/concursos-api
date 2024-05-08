@@ -10,6 +10,8 @@ import (
 	"github.com/edupsousa/concursos-api/db"
 	"github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
+	gmysql "gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -27,10 +29,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	initStorage(db)
 
-	server := api.NewAPIServer(fmt.Sprintf("%s:%s", config.Envs.PublicHost, config.Envs.Port), db)
+	gdb, err := gorm.Open(gmysql.New(gmysql.Config{Conn: db}), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	server := api.NewAPIServer(fmt.Sprintf("%s:%s", config.Envs.PublicHost, config.Envs.Port), db, gdb)
 	if err := server.Run(); err != nil {
 		log.Fatal(err)
 	}

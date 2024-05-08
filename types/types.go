@@ -29,19 +29,3 @@ type UserStore interface {
 	GetUserByID(id int) (*User, error)
 	CreateUser(User) error
 }
-
-type ConcursosStore interface {
-	GetConcursos() ([]*Concurso, error)
-	GetConcursoByID(id int) (*Concurso, error)
-	CreateConcurso(Concurso) error
-}
-
-type Concurso struct {
-	ID        int       `json:"id"`
-	Titulo    string    `json:"titulo"`
-	CreatedAt time.Time `json:"createdAt"`
-}
-
-type CreateConcursoPayload struct {
-	Titulo string `json:"titulo" validate:"required"`
-}

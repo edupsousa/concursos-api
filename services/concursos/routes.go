@@ -12,11 +12,11 @@ import (
 )
 
 type Handler struct {
-	store     types.ConcursosStore
+	store     ConcursosStore
 	userStore types.UserStore
 }
 
-func NewHandler(store types.ConcursosStore, userStore types.UserStore) *Handler {
+func NewHandler(store ConcursosStore, userStore types.UserStore) *Handler {
 	return &Handler{store: store, userStore: userStore}
 }
 
@@ -27,11 +27,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 }
 
 func (h *Handler) handleGetConcursos(w http.ResponseWriter, r *http.Request) {
-	concursos, err := h.store.GetConcursos()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	concursos := h.store.GetConcursos()
 
 	utils.WriteJSON(w, http.StatusOK, concursos)
 }
@@ -49,9 +45,9 @@ func (h *Handler) handleGetConcurso(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	concurso, err := h.store.GetConcursoByID(concursoID)
-	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
+	concurso := h.store.GetConcursoByID(concursoID)
+	if concurso == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("concurso not found"))
 		return
 	}
 
@@ -59,7 +55,7 @@ func (h *Handler) handleGetConcurso(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) handleCreateConcurso(w http.ResponseWriter, r *http.Request) {
-	var payload types.CreateConcursoPayload
+	var payload CreateConcursoPayload
 	if err := utils.ParseJSON(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
@@ -70,8 +66,8 @@ func (h *Handler) handleCreateConcurso(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	concurso := types.Concurso{Titulo: payload.Titulo}
-	if err := h.store.CreateConcurso(concurso); err != nil {
+	concurso := Concurso{Titulo: payload.Titulo}
+	if err := h.store.CreateConcurso(&concurso); err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
