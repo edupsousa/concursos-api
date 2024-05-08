@@ -34,7 +34,7 @@ func CreateJWT(userID uint) (string, error) {
 	return tokenString, nil
 }
 
-func WithJWTAuth(handlerFunc http.HandlerFunc, store user_model.UserRepository) http.HandlerFunc {
+func WithJWTAuth(handlerFunc http.HandlerFunc, userRepo user_model.UserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tokenString := getTokenFromRequest(r)
 		token, err := validateTokenString(tokenString)
@@ -48,7 +48,7 @@ func WithJWTAuth(handlerFunc http.HandlerFunc, store user_model.UserRepository) 
 			permissionDenied(w)
 			return
 		}
-		user, err := getUserFromToken(token, store)
+		user, err := getUserFromToken(token, userRepo)
 		if err != nil {
 			log.Printf("failed to get user: %v", err)
 			permissionDenied(w)
@@ -62,11 +62,11 @@ func WithJWTAuth(handlerFunc http.HandlerFunc, store user_model.UserRepository) 
 	}
 }
 
-func getUserFromToken(token *jwt.Token, store user_model.UserRepository) (*user_model.User, error) {
+func getUserFromToken(token *jwt.Token, userRepo user_model.UserRepository) (*user_model.User, error) {
 	claims := token.Claims.(jwt.MapClaims)
 	strUserID := claims["userID"].(string)
 	userID, _ := strconv.Atoi(strUserID)
-	user := store.FindByID(userID)
+	user := userRepo.FindByID(userID)
 	if user == nil {
 		return nil, fmt.Errorf("user not found")
 	}

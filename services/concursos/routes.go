@@ -13,22 +13,22 @@ import (
 )
 
 type Handler struct {
-	store     concursos_model.ConcursosStore
-	userStore user_model.UserRepository
+	concursoRepo concursos_model.ConcursosRepository
+	userRepo     user_model.UserRepository
 }
 
-func NewHandler(store concursos_model.ConcursosStore, userStore user_model.UserRepository) *Handler {
-	return &Handler{store: store, userStore: userStore}
+func NewHandler(concursoRepo concursos_model.ConcursosRepository, userRepo user_model.UserRepository) *Handler {
+	return &Handler{concursoRepo: concursoRepo, userRepo: userRepo}
 }
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {
-	router.HandleFunc("/concursos", auth.WithJWTAuth(h.handleGetConcursos, h.userStore)).Methods(http.MethodGet)
-	router.HandleFunc("/concursos", auth.WithJWTAuth(h.handleCreateConcurso, h.userStore)).Methods(http.MethodPost)
-	router.HandleFunc("/concursos/{id}", auth.WithJWTAuth(h.handleGetConcurso, h.userStore)).Methods(http.MethodGet)
+	router.HandleFunc("/concursos", auth.WithJWTAuth(h.handleGetConcursos, h.userRepo)).Methods(http.MethodGet)
+	router.HandleFunc("/concursos", auth.WithJWTAuth(h.handleCreateConcurso, h.userRepo)).Methods(http.MethodPost)
+	router.HandleFunc("/concursos/{id}", auth.WithJWTAuth(h.handleGetConcurso, h.userRepo)).Methods(http.MethodGet)
 }
 
 func (h *Handler) handleGetConcursos(w http.ResponseWriter, r *http.Request) {
-	concursos := h.store.GetConcursos()
+	concursos := h.concursoRepo.FindAll()
 
 	var response []concursos_model.GetConcursosResponseItem
 	for _, concurso := range concursos {
@@ -55,7 +55,7 @@ func (h *Handler) handleGetConcurso(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	concurso := h.store.GetConcursoByID(concursoID)
+	concurso := h.concursoRepo.FindByID(concursoID)
 	if concurso == nil {
 		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("concurso not found"))
 		return
@@ -85,7 +85,7 @@ func (h *Handler) handleCreateConcurso(w http.ResponseWriter, r *http.Request) {
 	}
 
 	concurso := concursos_model.Concurso{Titulo: payload.Titulo}
-	if err := h.store.CreateConcurso(&concurso); err != nil {
+	if err := h.concursoRepo.Create(&concurso); err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
