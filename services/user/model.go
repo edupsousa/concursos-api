@@ -1,8 +1,9 @@
-package user_model
+package user
 
 import (
 	"time"
 
+	"github.com/edupsousa/concursos-api/services/auth"
 	"gorm.io/gorm"
 )
 
@@ -31,8 +32,20 @@ type User struct {
 	DeletedAt     gorm.DeletedAt
 }
 
+func (u *User) GetID() uint {
+	return u.ID
+}
+
 type UserRepository interface {
 	FindByEmail(string) *User
-	FindByID(id int) *User
+	FindByID(id uint) *User
 	Create(*User) error
+}
+
+type UserRepoJWTAdapter struct {
+	UserRepository
+}
+
+func (u *UserRepoJWTAdapter) FindByID(id uint) auth.JWTUser {
+	return u.UserRepository.FindByID(id)
 }

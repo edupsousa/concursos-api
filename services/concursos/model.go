@@ -1,4 +1,4 @@
-package concursos_model
+package concursos
 
 import (
 	"time"

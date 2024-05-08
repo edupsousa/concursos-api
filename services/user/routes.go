@@ -5,17 +5,16 @@ import (
 	"net/http"
 
 	"github.com/edupsousa/concursos-api/services/auth"
-	user_model "github.com/edupsousa/concursos-api/services/user/model"
 	"github.com/edupsousa/concursos-api/utils"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 )
 
 type Handler struct {
-	userRepo user_model.UserRepository
+	userRepo UserRepository
 }
 
-func NewHandler(userRepo user_model.UserRepository) *Handler {
+func NewHandler(userRepo UserRepository) *Handler {
 	return &Handler{userRepo: userRepo}
 }
 
@@ -25,7 +24,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 }
 
 func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
-	var payload user_model.LoginUserPayload
+	var payload LoginUserPayload
 	if err := utils.ParseJSON(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 	}
@@ -57,7 +56,7 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
-	var payload user_model.RegisterUserPayload
+	var payload RegisterUserPayload
 	if err := utils.ParseJSON(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 	}
@@ -81,7 +80,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.userRepo.Create(&user_model.User{
+	err = h.userRepo.Create(&User{
 		FirstName:     payload.FirstName,
 		LastName:      payload.LastName,
 		Email:         payload.Email,

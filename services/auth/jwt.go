@@ -9,13 +9,20 @@ import (
 	"time"
 
 	"github.com/edupsousa/concursos-api/config"
-	user_model "github.com/edupsousa/concursos-api/services/user/model"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 type contextKey string
 
 const UserKey contextKey = "userID"
+
+type JWTUser interface {
+	GetID() uint
+}
+
+type JWTUserRepository interface {
+	FindByID(id uint) JWTUser
+}
 
 func CreateJWT(userID uint) (string, error) {
 	secret := config.Envs.JWTSecret
@@ -34,7 +41,7 @@ func CreateJWT(userID uint) (string, error) {
 	return tokenString, nil
 }
 
-func WithJWTAuth(handlerFunc http.HandlerFunc, userRepo user_model.UserRepository) http.HandlerFunc {
+func WithJWTAuth(handlerFunc http.HandlerFunc, repo JWTUserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tokenString := getTokenFromRequest(r)
 		token, err := validateTokenString(tokenString)
@@ -48,25 +55,25 @@ func WithJWTAuth(handlerFunc http.HandlerFunc, userRepo user_model.UserRepositor
 			permissionDenied(w)
 			return
 		}
-		user, err := getUserFromToken(token, userRepo)
+		user, err := getUserFromToken(token, repo)
 		if err != nil {
 			log.Printf("failed to get user: %v", err)
 			permissionDenied(w)
 			return
 		}
 		ctx := r.Context()
-		ctx = context.WithValue(ctx, UserKey, user.ID)
+		ctx = context.WithValue(ctx, UserKey, user.GetID())
 		r = r.WithContext(ctx)
 
 		handlerFunc(w, r)
 	}
 }
 
-func getUserFromToken(token *jwt.Token, userRepo user_model.UserRepository) (*user_model.User, error) {
+func getUserFromToken(token *jwt.Token, userRepo JWTUserRepository) (JWTUser, error) {
 	claims := token.Claims.(jwt.MapClaims)
 	strUserID := claims["userID"].(string)
-	userID, _ := strconv.Atoi(strUserID)
-	user := userRepo.FindByID(userID)
+	userID, _ := strconv.ParseUint(strUserID, 10, 64)
+	user := userRepo.FindByID(uint(userID))
 	if user == nil {
 		return nil, fmt.Errorf("user not found")
 	}

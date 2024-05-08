@@ -6,33 +6,33 @@ import (
 	"strconv"
 
 	"github.com/edupsousa/concursos-api/services/auth"
-	concursos_model "github.com/edupsousa/concursos-api/services/concursos/model"
-	user_model "github.com/edupsousa/concursos-api/services/user/model"
+	"github.com/edupsousa/concursos-api/services/user"
 	"github.com/edupsousa/concursos-api/utils"
 	"github.com/gorilla/mux"
 )
 
 type Handler struct {
-	concursoRepo concursos_model.ConcursosRepository
-	userRepo     user_model.UserRepository
+	concursoRepo ConcursosRepository
+	userRepo     user.UserRepository
 }
 
-func NewHandler(concursoRepo concursos_model.ConcursosRepository, userRepo user_model.UserRepository) *Handler {
+func NewHandler(concursoRepo ConcursosRepository, userRepo user.UserRepository) *Handler {
 	return &Handler{concursoRepo: concursoRepo, userRepo: userRepo}
 }
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {
-	router.HandleFunc("/concursos", auth.WithJWTAuth(h.handleGetConcursos, h.userRepo)).Methods(http.MethodGet)
-	router.HandleFunc("/concursos", auth.WithJWTAuth(h.handleCreateConcurso, h.userRepo)).Methods(http.MethodPost)
-	router.HandleFunc("/concursos/{id}", auth.WithJWTAuth(h.handleGetConcurso, h.userRepo)).Methods(http.MethodGet)
+	jwtUserRepo := &user.UserRepoJWTAdapter{UserRepository: h.userRepo}
+	router.HandleFunc("/concursos", auth.WithJWTAuth(h.handleGetConcursos, jwtUserRepo)).Methods(http.MethodGet)
+	router.HandleFunc("/concursos", auth.WithJWTAuth(h.handleCreateConcurso, jwtUserRepo)).Methods(http.MethodPost)
+	router.HandleFunc("/concursos/{id}", auth.WithJWTAuth(h.handleGetConcurso, jwtUserRepo)).Methods(http.MethodGet)
 }
 
 func (h *Handler) handleGetConcursos(w http.ResponseWriter, r *http.Request) {
 	concursos := h.concursoRepo.FindAll()
 
-	var response []concursos_model.GetConcursosResponseItem
+	var response []GetConcursosResponseItem
 	for _, concurso := range concursos {
-		response = append(response, concursos_model.GetConcursosResponseItem{
+		response = append(response, GetConcursosResponseItem{
 			ID:        concurso.ID,
 			Titulo:    concurso.Titulo,
 			Publicado: concurso.Publicado,
@@ -61,7 +61,7 @@ func (h *Handler) handleGetConcurso(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := concursos_model.GetConcursoResponse{
+	response := GetConcursoResponse{
 		ID:        concurso.ID,
 		Titulo:    concurso.Titulo,
 		Publicado: concurso.Publicado,
@@ -73,7 +73,7 @@ func (h *Handler) handleGetConcurso(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) handleCreateConcurso(w http.ResponseWriter, r *http.Request) {
-	var payload concursos_model.CreateConcursoPayload
+	var payload CreateConcursoPayload
 	if err := utils.ParseJSON(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
@@ -84,7 +84,7 @@ func (h *Handler) handleCreateConcurso(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	concurso := concursos_model.Concurso{Titulo: payload.Titulo}
+	concurso := Concurso{Titulo: payload.Titulo}
 	if err := h.concursoRepo.Create(&concurso); err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return

@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	user_model "github.com/edupsousa/concursos-api/services/user/model"
 	"github.com/gorilla/mux"
 )
 
@@ -16,7 +15,7 @@ func TestUserServiceHandlers(t *testing.T) {
 	handler := NewHandler(userRepo)
 
 	t.Run("should fail if the user payload is invalid", func(t *testing.T) {
-		payload := user_model.RegisterUserPayload{
+		payload := RegisterUserPayload{
 			FirstName: "John",
 			LastName:  "Doe",
 			Email:     "abc",
@@ -39,7 +38,7 @@ func TestUserServiceHandlers(t *testing.T) {
 	})
 
 	t.Run("should correctly register a new user", func(t *testing.T) {
-		payload := user_model.RegisterUserPayload{
+		payload := RegisterUserPayload{
 			FirstName: "John",
 			LastName:  "Doe",
 			Email:     "john_doe@acme.com",
@@ -64,14 +63,14 @@ func TestUserServiceHandlers(t *testing.T) {
 
 type mockUserRepo struct{}
 
-func (m *mockUserRepo) FindByEmail(email string) *user_model.User {
+func (m *mockUserRepo) FindByEmail(email string) *User {
 	return nil
 }
 
-func (m *mockUserRepo) FindByID(id int) *user_model.User {
+func (m *mockUserRepo) FindByID(id uint) *User {
 	return nil
 }
 
-func (m *mockUserRepo) Create(user *user_model.User) error {
+func (m *mockUserRepo) Create(user *User) error {
 	return nil
 }

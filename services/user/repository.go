@@ -3,7 +3,6 @@ package user
 import (
 	"log"
 
-	user_model "github.com/edupsousa/concursos-api/services/user/model"
 	"gorm.io/gorm"
 )
 
@@ -12,12 +11,12 @@ type Repository struct {
 }
 
 func NewRepository(db *gorm.DB) *Repository {
-	db.AutoMigrate(&user_model.User{})
+	db.AutoMigrate(&User{})
 	return &Repository{db: db}
 }
 
-func (repo *Repository) FindByEmail(email string) *user_model.User {
-	var user user_model.User
+func (repo *Repository) FindByEmail(email string) *User {
+	var user User
 	err := repo.db.Where("email = ?", email).First(&user).Error
 	if err != nil {
 		log.Printf("error getting user by email: %v", err)
@@ -26,8 +25,8 @@ func (repo *Repository) FindByEmail(email string) *user_model.User {
 	return &user
 }
 
-func (repo *Repository) FindByID(id int) *user_model.User {
-	var user user_model.User
+func (repo *Repository) FindByID(id uint) *User {
+	var user User
 	err := repo.db.First(&user, id).Error
 	if err != nil {
 		log.Printf("error getting user by id: %v", err)
@@ -36,6 +35,6 @@ func (repo *Repository) FindByID(id int) *user_model.User {
 	return &user
 }
 
-func (repo *Repository) Create(user *user_model.User) error {
+func (repo *Repository) Create(user *User) error {
 	return repo.db.Create(user).Error
 }
