@@ -31,8 +31,8 @@ type User struct {
 	DeletedAt     gorm.DeletedAt
 }
 
-type UserStore interface {
-	GetUserByEmail(string) *User
-	GetUserByID(id int) *User
-	CreateUser(*User) error
+type UserRepository interface {
+	FindByEmail(string) *User
+	FindByID(id int) *User
+	Create(*User) error
 }

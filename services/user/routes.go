@@ -12,10 +12,10 @@ import (
 )
 
 type Handler struct {
-	store user_model.UserStore
+	store user_model.UserRepository
 }
 
-func NewHandler(store user_model.UserStore) *Handler {
+func NewHandler(store user_model.UserRepository) *Handler {
 	return &Handler{store: store}
 }
 
@@ -36,7 +36,7 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u := h.store.GetUserByEmail(payload.Email)
+	u := h.store.FindByEmail(payload.Email)
 	if u == nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid email or password"))
 		return
@@ -69,7 +69,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: Replace with count user by email
-	user := h.store.GetUserByEmail(payload.Email)
+	user := h.store.FindByEmail(payload.Email)
 	if user != nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user with email %s already exists", payload.Email))
 		return
@@ -81,7 +81,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.store.CreateUser(&user_model.User{
+	err = h.store.Create(&user_model.User{
 		FirstName:     payload.FirstName,
 		LastName:      payload.LastName,
 		Email:         payload.Email,

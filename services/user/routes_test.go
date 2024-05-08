@@ -64,14 +64,14 @@ func TestUserServiceHandlers(t *testing.T) {
 
 type mockUserStore struct{}
 
-func (m *mockUserStore) GetUserByEmail(email string) *user_model.User {
+func (m *mockUserStore) FindByEmail(email string) *user_model.User {
 	return nil
 }
 
-func (m *mockUserStore) GetUserByID(id int) *user_model.User {
+func (m *mockUserStore) FindByID(id int) *user_model.User {
 	return nil
 }
 
-func (m *mockUserStore) CreateUser(user *user_model.User) error {
+func (m *mockUserStore) Create(user *user_model.User) error {
 	return nil
 }

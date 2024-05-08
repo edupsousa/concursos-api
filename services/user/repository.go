@@ -7,18 +7,18 @@ import (
 	"gorm.io/gorm"
 )
 
-type Store struct {
+type Repository struct {
 	db *gorm.DB
 }
 
-func NewStore(db *gorm.DB) *Store {
+func NewRepository(db *gorm.DB) *Repository {
 	db.AutoMigrate(&user_model.User{})
-	return &Store{db: db}
+	return &Repository{db: db}
 }
 
-func (s *Store) GetUserByEmail(email string) *user_model.User {
+func (repo *Repository) FindByEmail(email string) *user_model.User {
 	var user user_model.User
-	err := s.db.Where("email = ?", email).First(&user).Error
+	err := repo.db.Where("email = ?", email).First(&user).Error
 	if err != nil {
 		log.Printf("error getting user by email: %v", err)
 		return nil
@@ -26,9 +26,9 @@ func (s *Store) GetUserByEmail(email string) *user_model.User {
 	return &user
 }
 
-func (s *Store) GetUserByID(id int) *user_model.User {
+func (repo *Repository) FindByID(id int) *user_model.User {
 	var user user_model.User
-	err := s.db.First(&user, id).Error
+	err := repo.db.First(&user, id).Error
 	if err != nil {
 		log.Printf("error getting user by id: %v", err)
 		return nil
@@ -36,6 +36,6 @@ func (s *Store) GetUserByID(id int) *user_model.User {
 	return &user
 }
 
-func (s *Store) CreateUser(user *user_model.User) error {
-	return s.db.Create(user).Error
+func (repo *Repository) Create(user *user_model.User) error {
+	return repo.db.Create(user).Error
 }

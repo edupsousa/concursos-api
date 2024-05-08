@@ -14,10 +14,10 @@ import (
 
 type Handler struct {
 	store     concursos_model.ConcursosStore
-	userStore user_model.UserStore
+	userStore user_model.UserRepository
 }
 
-func NewHandler(store concursos_model.ConcursosStore, userStore user_model.UserStore) *Handler {
+func NewHandler(store concursos_model.ConcursosStore, userStore user_model.UserRepository) *Handler {
 	return &Handler{store: store, userStore: userStore}
 }
 
