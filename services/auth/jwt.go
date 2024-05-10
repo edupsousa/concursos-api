@@ -15,22 +15,25 @@ import (
 type contextKey string
 
 const UserKey contextKey = "userID"
+const RoleKey contextKey = "roleID"
 
 type JWTUser interface {
 	GetID() uint
+	GetRoleID() uint
 }
 
 type JWTUserRepository interface {
 	FindByID(id uint) JWTUser
 }
 
-func CreateJWT(userID uint) (string, error) {
+func CreateJWT(user JWTUser) (string, error) {
 	secret := config.Envs.JWTSecret
 	expiration := time.Second * time.Duration(config.Envs.JWTExpirationInSeconds)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userID":   strconv.FormatUint(uint64(userID), 10),
+		"userID":   strconv.FormatUint(uint64(user.GetID()), 10),
 		"expireAt": time.Now().Add(expiration).Unix(),
+		"roleID":   strconv.FormatUint(uint64(user.GetRoleID()), 10),
 	})
 
 	tokenString, err := token.SignedString([]byte(secret))
@@ -63,6 +66,7 @@ func WithJWTAuth(handlerFunc http.HandlerFunc, repo JWTUserRepository) http.Hand
 		}
 		ctx := r.Context()
 		ctx = context.WithValue(ctx, UserKey, user.GetID())
+		ctx = context.WithValue(ctx, RoleKey, user.GetRoleID())
 		r = r.WithContext(ctx)
 
 		handlerFunc(w, r)

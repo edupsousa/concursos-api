@@ -46,7 +46,7 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := auth.CreateJWT(u.ID)
+	token, err := auth.CreateJWT(u)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return

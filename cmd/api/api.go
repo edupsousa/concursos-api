@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/edupsousa/concursos-api/services/concursos"
+	"github.com/edupsousa/concursos-api/services/roles"
 	"github.com/edupsousa/concursos-api/services/user"
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
@@ -25,6 +26,8 @@ func NewAPIServer(addr string, db *gorm.DB) *APIServer {
 func (s *APIServer) Run() error {
 	router := mux.NewRouter()
 	subrouter := router.PathPrefix("/api/v1").Subrouter()
+
+	roles.NewRepository(s.db)
 
 	userRepo := user.NewRepository(s.db)
 	userHandler := user.NewHandler(userRepo)

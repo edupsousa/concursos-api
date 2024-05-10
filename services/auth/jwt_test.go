@@ -2,8 +2,22 @@ package auth
 
 import "testing"
 
+type mockUser struct {
+	ID     uint
+	RoleID uint
+}
+
+func (u *mockUser) GetID() uint {
+	return u.ID
+}
+
+func (u *mockUser) GetRoleID() uint {
+	return u.RoleID
+}
+
 func TestCreateJWT(t *testing.T) {
-	token, err := CreateJWT(1)
+	u := &mockUser{ID: 1, RoleID: 1}
+	token, err := CreateJWT(u)
 	if err != nil {
 		t.Errorf("error creating JWT: %s", err)
 	}
