@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/edupsousa/concursos-api/config"
+	"github.com/edupsousa/concursos-api/platform/config"
 	"github.com/golang-jwt/jwt/v5"
 )
 

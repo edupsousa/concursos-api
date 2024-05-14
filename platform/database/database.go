@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/edupsousa/concursos-api/config"
+	"github.com/edupsousa/concursos-api/platform/config"
 	"github.com/go-sql-driver/mysql"
 	gmysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"

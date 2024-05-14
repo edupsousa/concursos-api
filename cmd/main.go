@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/edupsousa/concursos-api/cmd/api"
-	"github.com/edupsousa/concursos-api/config"
+	"github.com/edupsousa/concursos-api/platform/config"
 	"github.com/edupsousa/concursos-api/platform/database"
 	"github.com/joho/godotenv"
 )
