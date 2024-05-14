@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/edupsousa/concursos-api/services/auth"
-	"github.com/edupsousa/concursos-api/services/user"
+	"github.com/edupsousa/concursos-api/features/auth"
+	"github.com/edupsousa/concursos-api/features/user"
 	"github.com/edupsousa/concursos-api/utils"
 	"github.com/gorilla/mux"
 )

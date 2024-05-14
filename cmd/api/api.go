@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/edupsousa/concursos-api/services/concursos"
-	"github.com/edupsousa/concursos-api/services/roles"
-	"github.com/edupsousa/concursos-api/services/user"
+	"github.com/edupsousa/concursos-api/features/concursos"
+	"github.com/edupsousa/concursos-api/features/roles"
+	"github.com/edupsousa/concursos-api/features/user"
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
 )

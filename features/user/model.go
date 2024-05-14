@@ -3,8 +3,8 @@ package user
 import (
 	"time"
 
-	"github.com/edupsousa/concursos-api/services/auth"
-	"github.com/edupsousa/concursos-api/services/roles"
+	"github.com/edupsousa/concursos-api/features/auth"
+	"github.com/edupsousa/concursos-api/features/roles"
 	"gorm.io/gorm"
 )
 
