@@ -7,7 +7,7 @@ import (
 
 	"github.com/edupsousa/concursos-api/features/auth"
 	"github.com/edupsousa/concursos-api/features/user"
-	"github.com/edupsousa/concursos-api/utils"
+	"github.com/edupsousa/concursos-api/platform/httpjson"
 	"github.com/gorilla/mux"
 )
 
@@ -39,25 +39,25 @@ func (h *Handler) handleGetConcursos(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	utils.WriteJSON(w, http.StatusOK, response)
+	httpjson.WriteJSON(w, http.StatusOK, response)
 }
 
 func (h *Handler) handleGetConcurso(w http.ResponseWriter, r *http.Request) {
 	strID, ok := mux.Vars(r)["id"]
 	if !ok {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("missing concurso id"))
+		httpjson.WriteError(w, http.StatusBadRequest, fmt.Errorf("missing concurso id"))
 		return
 	}
 
 	concursoID, err := strconv.Atoi(strID)
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid concurso id"))
+		httpjson.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid concurso id"))
 		return
 	}
 
 	concurso := h.concursoRepo.FindByID(concursoID)
 	if concurso == nil {
-		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("concurso not found"))
+		httpjson.WriteError(w, http.StatusNotFound, fmt.Errorf("concurso not found"))
 		return
 	}
 
@@ -69,26 +69,26 @@ func (h *Handler) handleGetConcurso(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt: concurso.UpdatedAt,
 	}
 
-	utils.WriteJSON(w, http.StatusOK, response)
+	httpjson.WriteJSON(w, http.StatusOK, response)
 }
 
 func (h *Handler) handleCreateConcurso(w http.ResponseWriter, r *http.Request) {
 	var payload CreateConcursoPayload
-	if err := utils.ParseJSON(r, &payload); err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
+	if err := httpjson.ParseJSON(r, &payload); err != nil {
+		httpjson.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := utils.Validate.Struct(payload); err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
+	if err := httpjson.Validate.Struct(payload); err != nil {
+		httpjson.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
 
 	concurso := Concurso{Titulo: payload.Titulo}
 	if err := h.concursoRepo.Create(&concurso); err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
+		httpjson.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusCreated, nil)
+	httpjson.WriteJSON(w, http.StatusCreated, nil)
 }
