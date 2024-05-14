@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/edupsousa/concursos-api/features/auth"
+	"github.com/edupsousa/concursos-api/platform/auth"
 	"github.com/edupsousa/concursos-api/platform/httpjson"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
