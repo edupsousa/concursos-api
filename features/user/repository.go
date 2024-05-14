@@ -3,14 +3,14 @@ package user
 import (
 	"log"
 
-	"gorm.io/gorm"
+	"github.com/edupsousa/concursos-api/platform/database"
 )
 
 type Repository struct {
-	db *gorm.DB
+	db *database.DB
 }
 
-func NewRepository(db *gorm.DB) *Repository {
+func NewRepository(db *database.DB) *Repository {
 	db.AutoMigrate(&User{})
 	return &Repository{db: db}
 }

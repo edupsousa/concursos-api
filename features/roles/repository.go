@@ -1,12 +1,15 @@
 package roles
 
-import "gorm.io/gorm"
+import (
+	"github.com/edupsousa/concursos-api/platform/database"
+	"gorm.io/gorm"
+)
 
 type Repository struct {
-	db *gorm.DB
+	db *database.DB
 }
 
-func NewRepository(db *gorm.DB) *Repository {
+func NewRepository(db *database.DB) *Repository {
 	db.AutoMigrate(&Role{})
 	repo := Repository{db: db}
 	repo.seed()

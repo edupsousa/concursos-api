@@ -7,16 +7,16 @@ import (
 	"github.com/edupsousa/concursos-api/features/concursos"
 	"github.com/edupsousa/concursos-api/features/roles"
 	"github.com/edupsousa/concursos-api/features/user"
+	"github.com/edupsousa/concursos-api/platform/database"
 	"github.com/gorilla/mux"
-	"gorm.io/gorm"
 )
 
 type APIServer struct {
 	addr string
-	db   *gorm.DB
+	db   *database.DB
 }
 
-func NewAPIServer(addr string, db *gorm.DB) *APIServer {
+func NewAPIServer(addr string, db *database.DB) *APIServer {
 	return &APIServer{
 		addr: addr,
 		db:   db,
