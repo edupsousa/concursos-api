@@ -5,6 +5,12 @@ import (
 	"gorm.io/gorm"
 )
 
+type RoleRepository interface {
+	FindAll() ([]*Role, error)
+	FindByID(id uint) (*Role, error)
+	Create(role *Role) error
+}
+
 type Repository struct {
 	db *database.DB
 }

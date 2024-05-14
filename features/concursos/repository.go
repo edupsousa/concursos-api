@@ -6,6 +6,12 @@ import (
 	"github.com/edupsousa/concursos-api/platform/database"
 )
 
+type ConcursosRepository interface {
+	FindAll() []*Concurso
+	FindByID(id int) *Concurso
+	Create(*Concurso) error
+}
+
 type Repository struct {
 	db *database.DB
 }

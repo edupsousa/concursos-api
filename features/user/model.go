@@ -43,12 +43,6 @@ func (u *User) GetRoleID() uint {
 	return u.RoleID
 }
 
-type UserRepository interface {
-	FindByEmail(string) *User
-	FindByID(id uint) *User
-	Create(*User) error
-}
-
 type UserRepoJWTAdapter struct {
 	UserRepository
 }

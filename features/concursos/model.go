@@ -6,12 +6,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type ConcursosRepository interface {
-	FindAll() []*Concurso
-	FindByID(id int) *Concurso
-	Create(*Concurso) error
-}
-
 type Concurso struct {
 	gorm.Model
 	ID        uint   `gorm:"primaryKey"`

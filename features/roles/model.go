@@ -14,9 +14,3 @@ type Role struct {
 	UpdatedAt time.Time `gorm:"not null"`
 	DeletedAt gorm.DeletedAt
 }
-
-type RoleRepository interface {
-	FindAll() ([]*Role, error)
-	FindByID(id uint) (*Role, error)
-	Create(role *Role) error
-}

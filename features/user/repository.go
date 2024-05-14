@@ -6,6 +6,12 @@ import (
 	"github.com/edupsousa/concursos-api/platform/database"
 )
 
+type UserRepository interface {
+	FindByEmail(string) *User
+	FindByID(id uint) *User
+	Create(*User) error
+}
+
 type Repository struct {
 	db *database.DB
 }
